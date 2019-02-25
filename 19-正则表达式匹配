@@ -1,0 +1,120 @@
+# 19-正则表达式匹配
+
+[OJ链接](https://www.nowcoder.com/practice/623a5ac0ea5b4e5f95552655361ae0a8?tpId=13&tqId=11203&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**题目描述**
+
+在一个长度为n的数组里的所有数字都在0到n-1的范围内。 数组中某些数字是重复的，但不知道有几个数字是重复的。也不知道每个数字重复几次。请找出数组中任意一个重复的数字。 例如，如果输入长度为7的数组{2,3,1,0,2,5,3}，那么对应的输出是第一个重复的数字2。
+
+**思路分析**
+
+1. **交换**（时间:O(n)，空间:O(1)）：从头扫到尾，只要当前元素值与下标不同，就做一次判断,numbers[i]与numbers[numbers[i]]，相等就认为找到了
+重复元素，返回true,否则就交换两者，继续循环。直到最后还没找到认为没找到重复元素，返回false
+
+2. **排序**（时间:O(nlogn)，空间:O(1)）：先排序，然后遍历数组找到第一个重复的数字即可
+
+3. **哈希表**（时间:O(n)，空间:O(n)）：扫描数组，使用哈希表统计每个数字出现的次数，当统计到一个以前出现过的数字时，找到重复
+
+**代码实现（交换）**
+
+```c++
+class Solution {
+public:
+    // Parameters:
+    //        numbers:     an array of integers
+    //        length:      the length of array numbers
+    //        duplication: (Output) the duplicated number in the array number
+    // Return value:       true if the input is valid, and there are some duplications in the array number
+    //                     otherwise false
+    bool duplicate(int numbers[], int length, int* duplication) 
+    {
+        if(length<=0)
+            return false;
+        for(int i=0;i<length;i++)
+        {
+            if(numbers[i]!=i)
+            {
+                if(numbers[i]==numbers[numbers[i]])
+                {
+                    *duplication=numbers[i];
+                    return true;
+                }
+                    
+                else
+                {
+                    int temp=numbers[numbers[i]];
+                    numbers[numbers[i]]=numbers[i];
+                    numbers[i]=temp;
+                }
+            }
+        }
+        return false;//注意返回值
+    }
+};
+```
+
+**代码实现（排序）**
+
+```c++
+class Solution {
+public:
+    // Parameters:
+    //        numbers:     an array of integers
+    //        length:      the length of array numbers
+    //        duplication: (Output) the duplicated number in the array number
+    // Return value:       true if the input is valid, and there are some duplications in the array number
+    //                     otherwise false
+    bool duplicate(int numbers[], int length, int* duplication) 
+    {
+        if(length<=0)
+            return false;
+        sort(numbers,numbers+length);
+        for(int i=0;i<length;i++)
+        {
+            if(numbers[i]==numbers[i+1])
+            {
+                *duplication=numbers[i];
+                return true;
+            }
+        }
+        return false;
+    }
+};
+```
+
+**代码实现（哈希表）**
+
+```c++
+class Solution {
+public:
+    // Parameters:
+    //        numbers:     an array of integers
+    //        length:      the length of array numbers
+    //        duplication: (Output) the duplicated number in the array number
+    // Return value:       true if the input is valid, and there are some duplications in the array number
+    //                     otherwise false
+    bool duplicate(int numbers[], int length, int* duplication) 
+    {
+        bool res=false;
+        *duplication=-1;
+        unordered_map<int, int> hash;
+        for(int i=0;i<length;i++)
+        {
+            int target=numbers[i];
+            if(hash.find(target)!=hash.end())
+                {
+                    *duplication=target;
+                    return true;
+                }
+                hash[numbers[i]]=i;
+        }
+        return res;  
+    }
+};
+```
+**总结**
+
+* 注意检查return语句有没有漏了
+* 直接回忆起交换的方法，没有想到排序和哈希表的方法
+* 思考：如果限制不可以改变数组呢？
+* 注意sort(numbers,numbers+length)中的范围
